@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Task;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
@@ -11,7 +12,8 @@ class TaskController extends Controller
      */
     public function index()
     {
-        // 
+        $tasks = Task::latest()->get();
+        return view('tasks.index', compact('tasks'));
     }
 
     /**
@@ -19,7 +21,7 @@ class TaskController extends Controller
      */
     public function create()
     {
-        // 
+        //
     }
 
     /**
@@ -60,5 +62,27 @@ class TaskController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function toggle(Task $task)
+    {
+        $task->is_completed = !$task->is_completed;
+        $task->save();
+        
+        if ($task->is_completed) {
+            return redirect()
+                ->route('tasks.index')
+                ->with([
+                    'success' => 'Task marked as completed',
+                    'status' => 'completed'
+                ]);
+        } else {
+            return redirect()
+                ->route('tasks.index')
+                ->with([
+                    'success' => 'Task marked as incomplete',
+                    'status' => 'active'
+                ]);
+        }
     }
 }

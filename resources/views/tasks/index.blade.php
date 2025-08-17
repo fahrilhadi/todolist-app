@@ -1,12 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Tes</title>
-</head>
-<body>
-    hahah
-</body>
-</html>
+@extends('master')
+
+@section('title')
+    To-Do List App
+@endsection
+
+@push('styles')
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+
+    input[type="checkbox"] {
+      appearance: none;
+      width: 1.25rem;
+      height: 1.25rem;
+      border: 1.5px solid #000;
+      border-radius: 0.25rem;
+      background-color: #fff;
+      cursor: pointer;
+      display: grid;
+      place-content: center;
+    }
+
+    input[type="checkbox"]::before {
+      content: "✔";
+      font-size: 0.75rem;
+      color: #000;
+      transform: scale(0);
+      transition: 0.2s ease-in-out;
+    }
+
+    input[type="checkbox"]:checked::before {
+      transform: scale(1);
+    }
+  </style>
+@endpush
+
+@section('main-content')
+  <div class="w-full max-w-2xl px-4 py-6 space-y-4">
+
+    @if($tasks->isEmpty())
+      <div class="text-center py-12">
+        <p class="text-gray-500 text-lg font-medium">
+          No tasks yet. Start by adding your first task today.
+        </p>
+      </div>
+    @else
+        @foreach ($tasks as $task)
+          <div class="bg-white border border-gray-200 rounded-xl p-4 flex justify-between items-center shadow hover:shadow-lg transition">
+              <div class="flex items-center gap-3">
+                  <input type="checkbox" {{ $task->is_completed ? 'checked' : '' }} onchange="event.preventDefault(); document.getElementById('toggle-{{ $task->id }}').submit();">
+                  <span class="{{ $task->is_completed ? 'line-through text-gray-400' : '' }}">{{ $task->title }}</span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                  <a href="edit.html" 
+                    class="px-3 py-1 rounded-lg border border-gray-300 hover:border-black text-sm transition shadow">
+                      Edit
+                  </a>
+                  <button class="px-3 py-1 rounded-lg border border-gray-300 hover:border-red-500 hover:text-red-500 text-sm transition shadow">
+                      Delete
+                  </button>
+              </div>
+          </div>
+
+          <form id="toggle-{{ $task->id }}" action="{{ route('tasks.toggle', $task->id) }}" method="POST" style="display:none;">
+              @csrf
+              @method('PATCH')
+          </form>
+        @endforeach
+    @endif
+
+  </div>
+@endsection
