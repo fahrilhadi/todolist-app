@@ -13,7 +13,7 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Task::latest()->get();
+        $tasks = Task::paginate(5);
         return view('tasks.index', compact('tasks'));
     }
 
