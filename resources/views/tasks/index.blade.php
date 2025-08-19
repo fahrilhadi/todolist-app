@@ -52,7 +52,7 @@
               </div>
 
               <div class="flex items-center gap-2">
-                  <a href="edit.html" 
+                  <a href="{{ route('tasks.edit', $task->id) }}" 
                     class="px-3 py-1 rounded-lg border border-gray-300 hover:border-black text-sm transition shadow">
                       Edit
                   </a>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
 {
@@ -63,7 +64,8 @@ class TaskController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $task = Task::findOrFail($id);
+        return view('tasks.edit', compact('task'));
     }
 
     /**
@@ -71,7 +73,32 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $task = Task::findOrFail($id);
+
+        $request->validate([
+            'title' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('tasks', 'title')->ignore($task->id),
+            ],
+        ],
+        [
+            'title.required' => 'Task name is required',
+            'title.unique' => 'The task has already been taken',
+        ]);
+
+        $task->update([
+            'title' => $request->title,
+            'is_completed' => $request->has('is_completed'),
+        ]);
+
+        return redirect()
+            ->route('tasks.index')
+            ->with([
+                'success' => 'Task updated successfully',
+                'icon' => 'check',
+        ]);
     }
 
     /**
