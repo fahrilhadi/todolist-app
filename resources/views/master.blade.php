@@ -64,6 +64,7 @@
 
   {{-- Scripts --}}
   @include('tasks.includes.script')
+  @stack('addon-script')
 
 </body>
 </html>
